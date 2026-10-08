@@ -1,0 +1,17 @@
+# Core deep learning
+torch>=2.2
+monai[nibabel,itk,pillow]>=1.3
+
+# Image I/O
+pynrrd         # NRRD (.nrrd) - our actual image + label format, read directly for inspect_data.py
+itk            # MONAI's volumetric reader for NRRD during training (LoadImaged)
+nibabel        # NIfTI, kept in case any auxiliary files show up in this format
+pydicom        # DICOM series / RTSTRUCT, kept for the same reason
+pillow         # PNG/JPG slices, kept for the same reason
+
+# Utility / training quality-of-life
+numpy
+scikit-image   # contour <-> mask helpers if we need them
+matplotlib     # quick visual sanity checks of slices + overlays
+tqdm           # progress bars
+tensorboard    # training curves

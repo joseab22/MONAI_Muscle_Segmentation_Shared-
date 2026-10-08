@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific: training outputs and real patient scan data.
+# Code/scaffolding is tracked; the actual DICOM/NRRD files are not.
+outputs/
+data/images/*
+data/labels/*
+!data/images/.gitkeep
+!data/labels/.gitkeep
+.DS_Store
