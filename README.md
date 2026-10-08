@@ -10,6 +10,16 @@ worth double-checking with `scripts/inspect_data.py`: the exact integer
 value each muscle maps to in your mask files (see the `LabelScheme` note in
 `src/config.py`) — don't assume label order without confirming it.
 
+Verified against real cases P03-P06: native voxel spacing is 0.139-0.164mm
+per axis, and the field of view is only ~20mm across — confirmed mouse
+imaging, not human. `src/config.py`'s `target_spacing` is set to
+match (0.164mm isotropic); don't change this to a "typical clinical MRI"
+value like 1.0mm without re-checking — at that spacing these volumes
+resample down to ~20 voxels/axis, smaller than `patch_size`, which crashes
+training immediately. `src/dataset.py` also pads before the random crop
+now as a safety net against any future case whose cropped tissue region
+is smaller than `patch_size` in some dimension.
+
 ## Directory layout
 
 ```

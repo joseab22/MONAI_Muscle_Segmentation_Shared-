@@ -57,11 +57,21 @@ class Config:
     labels_dir: Path = LABELS_DIR
     label_scheme: LabelScheme = field(default_factory=LabelScheme)
 
-    # TODO: confirm against inspect_data.py output. If voxel spacing varies
-    # case to case, resampling to a common spacing (via Spacingd) matters a
-    # lot for 3D UNet training; if it's already consistent, this can be a
-    # no-op.
-    target_spacing: tuple[float, float, float] = (1.0, 1.0, 1.0)
+    # Verified against P03-P06 via scripts/inspect_data.py: native spacing
+    # ranges 0.139-0.164mm per axis (these are mouse scans, ~20mm field of
+    # view - not human). This resamples everything to a common 0.164mm
+    # isotropic grid, which is
+    # close to native for all 4 cases (minimal interpolation) and keeps
+    # volumes around ~125-140 voxels/axis, comfortably bigger than
+    # patch_size below.
+    #
+    # DO NOT set this to something like (1.0, 1.0, 1.0) assuming "typical"
+    # clinical MRI spacing - at 1mm this data resamples down to roughly
+    # 20x20x19 voxels, smaller than patch_size in every dimension, which
+    # crashes RandCropByPosNegLabeld on the first training step. Re-check
+    # this value with inspect_data.py if cases outside P03-P06 turn out to
+    # have substantially different native resolution.
+    target_spacing: tuple[float, float, float] = (0.164, 0.164, 0.164)
 
     # Patch size used for RandCropByPosNegLabeld during training and as the
     # sliding-window size during validation/inference. Must be divisible by

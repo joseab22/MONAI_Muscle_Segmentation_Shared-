@@ -25,6 +25,7 @@ from monai.transforms import (
     RandRotate90d,
     RandShiftIntensityd,
     Spacingd,
+    SpatialPadd,
 )
 
 from .config import Config
@@ -49,6 +50,13 @@ def get_transforms(config: Config, train: bool) -> Compose:
 
     if train:
         base += [
+            # CropForegroundd above can leave a region smaller than
+            # patch_size in some dimension (e.g. a case whose tissue
+            # doesn't fill the full field of view). RandCropByPosNegLabeld
+            # has no built-in padding and crashes if asked to crop a patch
+            # bigger than the volume - this guarantees the volume is at
+            # least patch_size before that crop runs.
+            SpatialPadd(keys=KEYS, spatial_size=config.patch_size, mode="constant"),
             RandCropByPosNegLabeld(
                 keys=KEYS,
                 label_key="label",
